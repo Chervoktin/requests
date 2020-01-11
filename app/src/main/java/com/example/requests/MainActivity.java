@@ -7,8 +7,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,9 +33,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
 
-            Request.Builder builder = new Request.Builder();
-            builder.url("http://192.168.1.43:8000/");
-            Request request = builder.build();
+            RequestBody formBody = new FormBody.Builder()
+                    .add("message", "Your message")
+                    .build();
+            Request request = new Request.Builder()
+                    .url("http://192.168.1.43:8000/")
+                    .post(formBody)
+                    .build();
 
             try {
                 Response response = client.newCall(request).execute();
