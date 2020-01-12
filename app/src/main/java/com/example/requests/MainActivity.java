@@ -4,8 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.TextView;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
@@ -14,27 +15,49 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
-    public TextView textView;
+    private EditText editTextResult;
+    private EditText editText1;
+    private EditText editText2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        OkHttpHandler client = new OkHttpHandler();
-        client.execute();
-        textView = (TextView) findViewById(R.id.textViewMsg);
+        editText1 = findViewById(R.id.editText1);
+        editText2 = findViewById(R.id.editText2);
+        editTextResult = findViewById(R.id.editTextResult);
+        Button button = findViewById(R.id.button21);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OkHttpHandler client = new OkHttpHandler();
+                client.execute();
+            }
+        });
+
     }
 
     public class OkHttpHandler extends AsyncTask<Void, Void, Void> {
 
         OkHttpClient client = new OkHttpClient();
         String message;
+        String a;
+        String b;
+
+        @Override
+        protected void onPreExecute() {
+            a = editText1.getText().toString();
+            b = editText2.getText().toString();
+            super.onPreExecute();
+
+        }
 
         @Override
         protected Void doInBackground(Void... voids) {
 
             RequestBody formBody = new FormBody.Builder()
-                    .add("message", "Your message")
+                    .add("a", a)
+                    .add("b", b)
                     .build();
             Request request = new Request.Builder()
                     .url("http://192.168.1.43:8000/")
@@ -53,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            textView.setText(message);
+            editTextResult.setText(message);
         }
     }
 }
