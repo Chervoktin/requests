@@ -2,11 +2,17 @@ package com.example.requests;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.franmontiel.persistentcookiejar.ClearableCookieJar;
+import com.franmontiel.persistentcookiejar.PersistentCookieJar;
+import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
+import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
 
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
@@ -18,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText editTextResult;
     private EditText editText1;
     private EditText editText2;
+    private Context context;
+    ClearableCookieJar cookieJar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,8 +33,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         editText1 = findViewById(R.id.editText1);
         editText2 = findViewById(R.id.editText2);
+        context = this;
         editTextResult = findViewById(R.id.editTextResult);
         Button button = findViewById(R.id.button21);
+        cookieJar =
+                new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(context));
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -39,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
     public class OkHttpHandler extends AsyncTask<Void, Void, Void> {
 
-        OkHttpClient client = new OkHttpClient();
+
         String message;
         String a;
         String b;
@@ -63,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
                     .url("http://192.168.1.43:8000/")
                     .post(formBody)
                     .build();
+            OkHttpClient client = new OkHttpClient().newBuilder().cookieJar(cookieJar).build();
 
             try {
                 Response response = client.newCall(request).execute();
