@@ -14,6 +14,9 @@ import com.franmontiel.persistentcookiejar.PersistentCookieJar;
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -52,33 +55,27 @@ public class MainActivity extends AppCompatActivity {
 
 
         String message;
-        String a;
-        String b;
+        JSONArray persons;
+        int index;
+        String key;
 
         @Override
         protected void onPreExecute() {
-            a = editText1.getText().toString();
-            b = editText2.getText().toString();
             super.onPreExecute();
 
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-
-            RequestBody formBody = new FormBody.Builder()
-                    .add("a", a)
-                    .add("b", b)
-                    .build();
             Request request = new Request.Builder()
-                    .url("http://192.168.1.43:8000/")
-                    .post(formBody)
+                    .url("http://192.168.1.43:8000/persons/")
                     .build();
             OkHttpClient client = new OkHttpClient().newBuilder().cookieJar(cookieJar).build();
 
             try {
                 Response response = client.newCall(request).execute();
                 message = response.body().string();
+                persons = new JSONArray(message);
             } catch (Exception e) {
                 message = e.getMessage();
             }
@@ -88,7 +85,17 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            editTextResult.setText(message);
+            index = Integer.parseInt(editText1.getText().toString());
+            key = editText2.getText().toString();
+            try {
+                editTextResult.setText(
+                        persons.getJSONObject(index).
+                                getJSONObject("fields").
+                                getString(key)
+                );
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
