@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
             try {
                 editTextResult.setText(
                         persons.getJSONObject(index).
-                                getJSONObject("fields").
                                 getString(key)
                 );
             } catch (JSONException e) {
